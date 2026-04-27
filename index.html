@@ -1,0 +1,649 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Fresh Fruits Menu</title>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet"/>
+<style>
+  :root {
+    --green: #22c55e;
+    --green-light: #dcfce7;
+    --green-mid: #86efac;
+    --green-dark: #15803d;
+    --bg: #f9fafb;
+    --surface: #ffffff;
+    --text: #111827;
+    --text-secondary: #6b7280;
+    --text-caption: #9ca3af;
+    --border: #f3f4f6;
+    --shadow: 0 8px 24px rgba(0,0,0,0.06);
+    --shadow-hover: 0 12px 32px rgba(0,0,0,0.10);
+    --radius: 20px;
+    --radius-sm: 12px;
+    --radius-pill: 999px;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: var(--bg);
+    font-family: 'Poppins', sans-serif;
+    color: var(--text);
+    min-height: 100vh;
+  }
+
+  /* === HERO === */
+  .hero {
+    background: var(--surface);
+    padding: 48px 24px 40px;
+    text-align: center;
+    border-bottom: 1px solid var(--border);
+  }
+  .hero-label {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--green-dark);
+    background: var(--green-light);
+    padding: 5px 14px;
+    border-radius: var(--radius-pill);
+    margin-bottom: 20px;
+    letter-spacing: 0.04em;
+  }
+  .hero-label::before { content: '🌿'; font-size: 13px; }
+  .hero h1 {
+    font-size: clamp(28px, 6vw, 48px);
+    font-weight: 600;
+    color: var(--text);
+    line-height: 1.15;
+    margin-bottom: 10px;
+  }
+  .hero h1 span { color: var(--green); }
+  .hero-sub {
+    font-size: 14px;
+    color: var(--text-secondary);
+    font-weight: 300;
+    max-width: 340px;
+    margin: 0 auto;
+    line-height: 1.6;
+  }
+
+  /* === FILTER BAR === */
+  .filter-bar {
+    background: var(--surface);
+    justify-content: center;
+    padding: 0 16px;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    overflow-x: auto;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    border-bottom: 1px solid var(--border);
+  }
+  .filter-bar::-webkit-scrollbar { display: none; }
+  .filter-btn {
+    padding: 14px 18px;
+    font-family: 'Poppins', sans-serif;
+    font-size: 13px;
+    font-weight: 400;
+    color: var(--text-secondary);
+    background: none;
+    border: none;
+    border-bottom: 2px solid transparent;
+    cursor: pointer;
+    white-space: nowrap;
+    transition: all 0.18s ease;
+  }
+  .filter-btn:hover { color: var(--text); }
+  .filter-btn.active {
+    color: var(--green);
+    border-bottom-color: var(--green);
+    font-weight: 500;
+  }
+
+  /* === MENU WRAPPER === */
+  .menu-wrapper {
+    max-width: 960px;
+    margin: 0 auto;
+    padding: 32px 16px 80px;
+  }
+
+  .section-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 20px;
+  }
+  .section-title {
+    font-size: 18px;
+    font-weight: 600;
+    color: var(--text);
+  }
+  .section-count {
+    font-size: 12px;
+    color: var(--text-caption);
+    font-weight: 400;
+    background: var(--surface);
+    padding: 4px 12px;
+    border-radius: var(--radius-pill);
+    border: 1px solid var(--border);
+  }
+
+  /* === FRUIT GRID === */
+  .fruits-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(290px, 1fr));
+    gap: 12px;
+    margin-bottom: 24px;
+  }
+
+  .fruit-item {
+    background: var(--surface);
+    border-radius: var(--radius);
+    padding: 16px 18px;
+    display: flex;
+    gap: 14px;
+    align-items: center;
+    cursor: pointer;
+    box-shadow: var(--shadow);
+    border: 2px solid transparent;
+    transition: transform 0.18s ease, box-shadow 0.18s ease, border-color 0.18s ease;
+  }
+  .fruit-item:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-hover);
+  }
+  .fruit-item:active { transform: scale(0.97); }
+  .fruit-item.selected {
+    border-color: var(--green);
+    box-shadow: 0 8px 24px rgba(34,197,94,0.15);
+  }
+
+  .fruit-icon {
+    font-size: 32px;
+    flex-shrink: 0;
+    width: 56px;
+    height: 56px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--green-light);
+    border-radius: 16px;
+  }
+  .fruit-info { flex: 1; min-width: 0; }
+  .fruit-name-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    margin-bottom: 3px;
+  }
+  .fruit-name {
+    font-size: 15px;
+    font-weight: 500;
+    color: var(--text);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .fruit-cal {
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--green-dark);
+    background: var(--green-light);
+    padding: 2px 9px;
+    border-radius: var(--radius-pill);
+    white-space: nowrap;
+    flex-shrink: 0;
+  }
+  .fruit-tagline {
+    font-size: 12px;
+    color: var(--text-secondary);
+    font-weight: 300;
+    margin-bottom: 8px;
+    line-height: 1.4;
+  }
+  .fruit-tags { display: flex; flex-wrap: wrap; gap: 4px; }
+  .tag {
+    font-size: 10px;
+    font-weight: 400;
+    padding: 3px 8px;
+    border-radius: var(--radius-pill);
+    background: var(--bg);
+    color: var(--text-secondary);
+    border: 1px solid var(--border);
+  }
+  .fruit-arrow {
+    color: var(--text-caption);
+    font-size: 20px;
+    flex-shrink: 0;
+    transition: transform 0.18s ease, color 0.18s ease;
+    line-height: 1;
+  }
+  .fruit-item:hover .fruit-arrow,
+  .fruit-item.selected .fruit-arrow {
+    transform: translateX(3px);
+    color: var(--green);
+  }
+
+  /* === DETAIL PANEL === */
+  .detail-panel {
+    display: none;
+    background: var(--surface);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow-hover);
+    overflow: hidden;
+    margin-bottom: 24px;
+    animation: slideDown 0.22s ease;
+  }
+  .detail-panel.open { display: block; }
+
+  @keyframes slideDown {
+    from { opacity: 0; transform: translateY(-8px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  .detail-top {
+    padding: 24px;
+    display: flex;
+    align-items: flex-start;
+    gap: 16px;
+    border-bottom: 1px solid var(--border);
+    background: linear-gradient(135deg, #f0fdf4 0%, #ffffff 60%);
+  }
+  .detail-emoji {
+    font-size: 52px;
+    width: 80px;
+    height: 80px;
+    background: var(--green-light);
+    border-radius: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+  }
+  .detail-headline { flex: 1; min-width: 0; }
+  .detail-name {
+    font-size: 22px;
+    font-weight: 600;
+    color: var(--text);
+    margin-bottom: 5px;
+  }
+  .detail-desc {
+    font-size: 13px;
+    color: var(--text-secondary);
+    font-weight: 300;
+    line-height: 1.6;
+    margin-bottom: 12px;
+  }
+  .detail-badges { display: flex; flex-wrap: wrap; gap: 6px; }
+  .detail-badge {
+    font-size: 11px;
+    font-weight: 500;
+    padding: 4px 12px;
+    border-radius: var(--radius-pill);
+    background: var(--green-light);
+    color: var(--green-dark);
+    border: 1px solid var(--green-mid);
+  }
+  .detail-close {
+    background: var(--bg);
+    border: 1px solid var(--border);
+    color: var(--text-secondary);
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    cursor: pointer;
+    font-size: 18px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    transition: background 0.15s, color 0.15s, transform 0.15s;
+    line-height: 1;
+  }
+  .detail-close:hover {
+    background: #fee2e2;
+    color: #ef4444;
+    border-color: #fecaca;
+    transform: scale(1.08);
+  }
+
+  .detail-body { padding: 24px; }
+
+  .detail-section-label {
+    font-size: 11px;
+    font-weight: 500;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--text-caption);
+    margin-bottom: 14px;
+  }
+
+  .nutrition-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(110px, 1fr));
+    gap: 10px;
+    margin-bottom: 28px;
+  }
+  .nutrition-card {
+    background: var(--bg);
+    border-radius: var(--radius-sm);
+    padding: 14px 12px;
+    border: 1px solid var(--border);
+    transition: box-shadow 0.15s;
+  }
+  .nutrition-card:hover { box-shadow: var(--shadow); }
+  .nutrition-label {
+    font-size: 10px;
+    font-weight: 400;
+    color: var(--text-caption);
+    text-transform: uppercase;
+    letter-spacing: 0.07em;
+    margin-bottom: 6px;
+  }
+  .nutrition-value {
+    font-size: 20px;
+    font-weight: 500;
+    color: var(--text);
+    line-height: 1;
+  }
+  .nutrition-unit {
+    font-size: 11px;
+    font-weight: 300;
+    color: var(--text-caption);
+    margin-left: 2px;
+  }
+
+  .bar-section { margin-bottom: 28px; }
+  .bar-row { margin-bottom: 14px; }
+  .bar-meta {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 6px;
+  }
+  .bar-name {
+    font-size: 13px;
+    font-weight: 400;
+    color: var(--text-secondary);
+  }
+  .bar-val {
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--text);
+  }
+  .bar-track {
+    height: 6px;
+    background: var(--bg);
+    border-radius: var(--radius-pill);
+    overflow: hidden;
+    border: 1px solid var(--border);
+  }
+  .bar-fill {
+    height: 100%;
+    border-radius: var(--radius-pill);
+    background: var(--green);
+    transition: width 0.5s cubic-bezier(0.25,0.8,0.25,1);
+  }
+
+  .benefits-grid { display: flex; flex-wrap: wrap; gap: 8px; }
+  .benefit-pill {
+    font-size: 13px;
+    font-weight: 400;
+    padding: 7px 16px;
+    border-radius: var(--radius-pill);
+    background: var(--bg);
+    color: var(--text-secondary);
+    border: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    transition: background 0.15s, color 0.15s, border-color 0.15s;
+  }
+  .benefit-pill:hover {
+    background: var(--green-light);
+    color: var(--green-dark);
+    border-color: var(--green-mid);
+  }
+  .benefit-pill::before {
+    content: '';
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: var(--green);
+    flex-shrink: 0;
+  }
+
+  .fruit-item.hidden { display: none; }
+
+  footer {
+    text-align: center;
+    padding: 24px;
+    font-size: 12px;
+    font-weight: 300;
+    color: var(--text-caption);
+    background: var(--surface);
+    border-top: 1px solid var(--border);
+    letter-spacing: 0.04em;
+  }
+
+  @media (max-width: 480px) {
+    .fruits-grid { grid-template-columns: 1fr; }
+    .hero { padding: 36px 20px 32px; }
+    .menu-wrapper { padding: 24px 12px 64px; }
+    .nutrition-grid { grid-template-columns: repeat(auto-fill, minmax(90px, 1fr)); }
+  }
+</style>
+</head>
+<body>
+
+<div class="hero">
+  <div class="hero-label">Nature's Finest Selection</div>
+  <h1>Fresh Fruit <span>Menu</span></h1>
+  <p class="hero-sub">20 fruits — tap any to discover full nutrition &amp; benefits</p>
+</div>
+
+<nav class="filter-bar" id="filterBar">
+  <button class="filter-btn active" data-filter="all">All Fruits</button>
+  <button class="filter-btn" data-filter="tropical">Tropical</button>
+  <button class="filter-btn" data-filter="citrus">Citrus</button>
+  <button class="filter-btn" data-filter="berries">Berries</button>
+  <button class="filter-btn" data-filter="stone">Stone Fruits</button>
+  <button class="filter-btn" data-filter="exotic">Exotic</button>
+</nav>
+
+<div class="menu-wrapper">
+
+  <div class="detail-panel" id="detailPanel"></div>
+
+  <div class="section-header">
+    <h2 class="section-title">Fresh Selection</h2>
+    <span class="section-count" id="countLabel">20 fruits</span>
+  </div>
+  <div class="fruits-grid" id="fruitsGrid"></div>
+
+</div>
+
+<footer>Fresh Fruits Menu &mdash; Nutritional data per 100g serving</footer>
+
+<script>
+const fruits = [
+  // ── ORIGINAL 20 ──────────────────────────────────────────────────────────
+  { name:"Apple", emoji:"🍎", tagline:"A crisp everyday classic", cal:52, protein:0.3, carbs:14, fat:0.2, fiber:2.4, sugar:10, vitC:5, potassium:107, water:86, gi:36, tags:["Low sugar","High fiber"], category:"all", benefits:["Heart health","Gut health","Antioxidants","Weight management","Blood sugar control","Immune support"] },
+  { name:"Banana", emoji:"🍌", tagline:"Nature's energy bar", cal:89, protein:1.1, carbs:23, fat:0.3, fiber:2.6, sugar:12, vitC:9, potassium:358, water:75, gi:51, tags:["Energy boost","Potassium"], category:"tropical", benefits:["Sustained energy","Muscle recovery","Mood boost","Digestive health","Heart health","Bone strength"] },
+  { name:"Orange", emoji:"🍊", tagline:"Vitamin C powerhouse", cal:47, protein:0.9, carbs:12, fat:0.1, fiber:2.4, sugar:9, vitC:53, potassium:181, water:87, gi:43, tags:["High Vit C","Hydrating"], category:"citrus", benefits:["Immunity boost","Skin health","Antioxidants","Heart health","Collagen production","Eye health"] },
+  { name:"Strawberry", emoji:"🍓", tagline:"Low-cal antioxidant gem", cal:32, protein:0.7, carbs:7.7, fat:0.3, fiber:2.0, sugar:4.9, vitC:59, potassium:153, water:91, gi:41, tags:["Low cal","Antioxidant"], category:"berries", benefits:["Skin health","Anti-inflammatory","Heart health","Blood sugar regulation","Brain function","Eye health"] },
+  { name:"Mango", emoji:"🥭", tagline:"The king of fruits", cal:60, protein:0.8, carbs:15, fat:0.4, fiber:1.6, sugar:14, vitC:36, potassium:168, water:82, gi:51, tags:["Tropical","Vitamins A & C"], category:"tropical", benefits:["Eye health","Immunity boost","Digestive health","Skin glow","Anti-cancer properties","Bone strength"] },
+  { name:"Grapes", emoji:"🍇", tagline:"Rich in resveratrol", cal:69, protein:0.7, carbs:18, fat:0.2, fiber:0.9, sugar:16, vitC:3.2, potassium:191, water:81, gi:53, tags:["Resveratrol","Antioxidant"], category:"berries", benefits:["Heart health","Anti-aging","Blood pressure","Bone health","Brain health","Anti-inflammatory"] },
+  { name:"Watermelon", emoji:"🍉", tagline:"Summer hydration hero", cal:30, protein:0.6, carbs:7.6, fat:0.2, fiber:0.4, sugar:6, vitC:8, potassium:112, water:92, gi:76, tags:["92% water","Lycopene"], category:"tropical", benefits:["Deep hydration","Muscle recovery","Heart health","Anti-inflammatory","Eye health","Kidney support"] },
+  { name:"Pineapple", emoji:"🍍", tagline:"Tropical enzyme marvel", cal:50, protein:0.5, carbs:13, fat:0.1, fiber:1.4, sugar:10, vitC:48, potassium:109, water:86, gi:59, tags:["Bromelain","Anti-inflam"], category:"tropical", benefits:["Aids digestion","Immunity boost","Anti-inflammatory","Bone health","Antioxidant-rich","Wound healing"] },
+  { name:"Blueberry", emoji:"🫐", tagline:"Brain-boosting superfood", cal:57, protein:0.7, carbs:14, fat:0.3, fiber:2.4, sugar:10, vitC:9.7, potassium:77, water:84, gi:53, tags:["Brain health","Superfood"], category:"berries", benefits:["Brain function","Heart health","Antioxidants","Blood sugar control","Anti-aging","Bone density"] },
+  { name:"Lemon", emoji:"🍋", tagline:"Zesty citrus detoxifier", cal:29, protein:1.1, carbs:9, fat:0.3, fiber:2.8, sugar:2.5, vitC:53, potassium:138, water:89, gi:20, tags:["Detox","Alkalizing"], category:"citrus", benefits:["Detox support","Kidney health","Immunity boost","Skin brightening","Aids digestion","Weight management"] },
+  { name:"Peach", emoji:"🍑", tagline:"Soft summer stone fruit", cal:39, protein:0.9, carbs:9.5, fat:0.3, fiber:1.5, sugar:8, vitC:6.6, potassium:190, water:89, gi:42, tags:["Skin health","Vitamin A"], category:"stone", benefits:["Skin health","Eye health","Immunity boost","Weight loss support","Digestive health","Heart health"] },
+  { name:"Cherry", emoji:"🍒", tagline:"Anti-inflammatory bites", cal:50, protein:1.0, carbs:12, fat:0.3, fiber:1.6, sugar:8, vitC:7, potassium:222, water:82, gi:22, tags:["Low GI","Sleep aid"], category:"stone", benefits:["Anti-inflammatory","Sleep quality","Heart health","Antioxidant-rich","Gout relief","Athletic recovery"] },
+  { name:"Pear", emoji:"🍐", tagline:"Fiber-rich gentle fruit", cal:57, protein:0.4, carbs:15, fat:0.1, fiber:3.1, sugar:10, vitC:4.3, potassium:116, water:84, gi:38, tags:["High fiber","Gentle"], category:"all", benefits:["Gut health","Weight management","Heart health","Bone density","Blood sugar balance","Anti-inflammatory"] },
+  { name:"Kiwi", emoji:"🥝", tagline:"Vitamin C champion", cal:61, protein:1.1, carbs:15, fat:0.5, fiber:3.0, sugar:9, vitC:92, potassium:312, water:83, gi:50, tags:["High Vit C","Sleep aid"], category:"exotic", benefits:["Immunity boost","Gut health","Sleep quality","Heart health","Skin health","Blood clotting"] },
+  { name:"Coconut", emoji:"🥥", tagline:"Fat-rich tropical staple", cal:354, protein:3.3, carbs:15, fat:33, fiber:9.0, sugar:6, vitC:3.3, potassium:356, water:47, gi:45, tags:["MCT oil","High fiber"], category:"tropical", benefits:["Brain fuel","Antifungal","Bone health","Energy metabolism","Thyroid support","Skin nourishment"] },
+  { name:"Avocado", emoji:"🥑", tagline:"Healthy fat superfood", cal:160, protein:2.0, carbs:9, fat:15, fiber:7.0, sugar:0.7, vitC:10, potassium:485, water:73, gi:15, tags:["Healthy fats","Potassium"], category:"exotic", benefits:["Heart health","Eye health","Arthritis relief","Cancer protection","Digestive health","Bone strength"] },
+  { name:"Papaya", emoji:"🫘", tagline:"Enzyme-rich digestive aid", cal:43, protein:0.5, carbs:11, fat:0.3, fiber:1.7, sugar:8, vitC:62, potassium:182, water:88, gi:60, tags:["Papain enzyme","Anti-inflam"], category:"tropical", benefits:["Digestive health","Immunity boost","Heart health","Anti-inflammatory","Eye health","Skin health"] },
+  { name:"Pomegranate", emoji:"🔴", tagline:"Ancient antioxidant jewel", cal:83, protein:1.7, carbs:19, fat:1.2, fiber:4.0, sugar:14, vitC:10, potassium:236, water:78, gi:35, tags:["Punicalagins","High antioxidant"], category:"exotic", benefits:["Heart health","Cancer protection","Memory boost","Arthritis relief","Gut microbiome","Blood pressure"] },
+  { name:"Fig", emoji:"🫐", tagline:"High-fiber Mediterranean gem", cal:74, protein:0.8, carbs:19, fat:0.3, fiber:2.9, sugar:16, vitC:2, potassium:232, water:79, gi:61, tags:["High fiber","Calcium"], category:"exotic", benefits:["Bone health","Blood sugar balance","Digestive health","Heart health","Weight management","Skin health"] },
+  { name:"Dragon Fruit", emoji:"🐉", tagline:"Exotic beauty superfood", cal:60, protein:1.2, carbs:13, fat:0, fiber:3.0, sugar:9, vitC:9, potassium:198, water:84, gi:48, tags:["Exotic","Iron-rich"], category:"exotic", benefits:["Gut health","Immunity boost","Iron absorption","Antioxidant-rich","Skin health","Blood sugar control"] },
+ 
+  // ── NEW 30 ───────────────────────────────────────────────────────────────
+  { name:"Raspberry", emoji:"🫐", tagline:"Delicate fiber powerhouse", cal:52, protein:1.2, carbs:11.9, fat:0.7, fiber:6.5, sugar:4.4, vitC:26, potassium:151, water:86, gi:32, tags:["High fiber","Low sugar"], category:"berries", benefits:["Blood sugar control","Anti-inflammatory","Heart health","Weight management","Brain health","Cancer protection"] },
+  { name:"Blackberry", emoji:"🫐", tagline:"Wild berry antioxidant king", cal:43, protein:1.4, carbs:9.6, fat:0.5, fiber:5.3, sugar:4.9, vitC:21, potassium:162, water:88, gi:25, tags:["High fiber","Low GI"], category:"berries", benefits:["Brain health","Bone strength","Antioxidants","Wound healing","Gut health","Heart health"] },
+  { name:"Plum", emoji:"🍑", tagline:"Sweet stone fruit with iron", cal:46, protein:0.7, carbs:11.4, fat:0.3, fiber:1.4, sugar:9.9, vitC:9.5, potassium:157, water:87, gi:39, tags:["Iron-rich","Low cal"], category:"stone", benefits:["Bone health","Blood sugar control","Heart health","Digestive health","Anxiety relief","Cell protection"] },
+  { name:"Apricot", emoji:"🍑", tagline:"Beta-carotene golden gem", cal:48, protein:1.4, carbs:11, fat:0.4, fiber:2.0, sugar:9.2, vitC:10, potassium:259, water:86, gi:34, tags:["Vitamin A","Beta-carotene"], category:"stone", benefits:["Eye health","Skin health","Heart health","Gut health","Bone density","Immune support"] },
+  { name:"Guava", emoji:"🍈", tagline:"Tropical vitamin C giant", cal:68, protein:2.6, carbs:14.3, fat:1.0, fiber:5.4, sugar:8.9, vitC:228, potassium:417, water:81, gi:12, tags:["Highest Vit C","High fiber"], category:"tropical", benefits:["Immunity boost","Skin health","Blood sugar control","Heart health","Digestive health","Weight loss"] },
+  { name:"Lychee", emoji:"🍈", tagline:"Jewel of the tropics", cal:66, protein:0.8, carbs:16.5, fat:0.4, fiber:1.3, sugar:15.2, vitC:72, potassium:171, water:82, gi:50, tags:["High Vit C","Exotic"], category:"exotic", benefits:["Immunity boost","Heart health","Anti-cancer","Skin health","Blood circulation","Weight management"] },
+  { name:"Passion Fruit", emoji:"🟣", tagline:"Fragrant fiber wonder", cal:97, protein:2.2, carbs:23.4, fat:0.7, fiber:10.4, sugar:11.2, vitC:30, potassium:348, water:73, gi:30, tags:["Highest fiber","Anxiety relief"], category:"exotic", benefits:["Sleep quality","Anxiety relief","Gut health","Eye health","Blood pressure","Immune support"] },
+  { name:"Jackfruit", emoji:"🍈", tagline:"Meaty tropical giant", cal:95, protein:1.7, carbs:23.3, fat:0.6, fiber:1.5, sugar:19.1, vitC:13.7, potassium:448, water:74, gi:50, tags:["High potassium","Meat substitute"], category:"tropical", benefits:["Muscle health","Bone strength","Blood sugar control","Skin health","Heart health","Cancer protection"] },
+  { name:"Mulberry", emoji:"🫐", tagline:"Rare antioxidant berry", cal:43, protein:1.4, carbs:9.8, fat:0.4, fiber:1.7, sugar:8.1, vitC:36, potassium:194, water:88, gi:25, tags:["Iron-rich","Antioxidant"], category:"berries", benefits:["Blood health","Immune support","Cholesterol control","Brain health","Bone health","Anti-inflammatory"] },
+  { name:"Cranberry", emoji:"🫐", tagline:"UTI-fighting tart berry", cal:46, protein:0.4, carbs:12.2, fat:0.1, fiber:4.6, sugar:4.0, vitC:14, potassium:85, water:87, gi:45, tags:["UTI prevention","High antioxidant"], category:"berries", benefits:["UTI prevention","Oral health","Heart health","Stomach ulcer prevention","Anti-cancer","Immune support"] },
+  { name:"Starfruit", emoji:"⭐", tagline:"Star-shaped citrus wonder", cal:31, protein:1.0, carbs:6.7, fat:0.3, fiber:2.8, sugar:3.9, vitC:34, potassium:133, water:91, gi:35, tags:["Low cal","Exotic"], category:"exotic", benefits:["Hydration","Immune support","Heart health","Anti-inflammatory","Metabolism boost","Skin health"] },
+  { name:"Cantaloupe", emoji:"🍈", tagline:"Orange hydration melon", cal:34, protein:0.8, carbs:8.2, fat:0.2, fiber:0.9, sugar:7.9, vitC:36, potassium:267, water:90, gi:65, tags:["Vitamin A","Hydrating"], category:"tropical", benefits:["Eye health","Immunity boost","Skin health","Hydration","Heart health","Digestive health"] },
+  { name:"Honeydew", emoji:"🍈", tagline:"Sweet pale summer melon", cal:36, protein:0.5, carbs:9.1, fat:0.1, fiber:0.8, sugar:8.1, vitC:18, potassium:228, water:90, gi:65, tags:["Hydrating","Potassium"], category:"tropical", benefits:["Bone health","Blood pressure","Skin health","Hydration","Immune support","Eye health"] },
+  { name:"Persimmon", emoji:"🟠", tagline:"Autumn's amber treasure", cal:81, protein:0.7, carbs:18.6, fat:0.4, fiber:3.6, sugar:12.5, vitC:7.5, potassium:161, water:80, gi:50, tags:["Vitamin A","High fiber"], category:"exotic", benefits:["Heart health","Anti-inflammatory","Vision protection","Gut health","Immune support","Skin health"] },
+  { name:"Tamarind", emoji:"🟤", tagline:"Sour digestive tonic", cal:239, protein:2.8, carbs:62.5, fat:0.6, fiber:5.1, sugar:38.0, vitC:3.5, potassium:628, water:31, gi:65, tags:["Highest potassium","Iron-rich"], category:"exotic", benefits:["Digestive health","Blood sugar control","Anti-inflammatory","Heart health","Weight management","Liver health"] },
+  { name:"Gooseberry", emoji:"🫐", tagline:"Tart immunity booster", cal:44, protein:0.9, carbs:10.2, fat:0.6, fiber:4.3, sugar:5.9, vitC:27, potassium:198, water:88, gi:25, tags:["High fiber","Tart"], category:"berries", benefits:["Immune support","Skin health","Gut health","Heart health","Blood sugar balance","Eye health"] },
+  { name:"Clementine", emoji:"🍊", tagline:"Easy-peel citrus snack", cal:47, protein:0.9, carbs:12, fat:0.1, fiber:1.7, sugar:9.7, vitC:49, potassium:177, water:87, gi:42, tags:["High Vit C","Convenient"], category:"citrus", benefits:["Immunity boost","Skin health","Heart health","Mood boost","Antioxidants","Hydration"] },
+  { name:"Grapefruit", emoji:"🍊", tagline:"Metabolism-revving citrus", cal:42, protein:0.8, carbs:10.7, fat:0.1, fiber:1.6, sugar:6.9, vitC:31, potassium:135, water:88, gi:25, tags:["Low GI","Weight loss"], category:"citrus", benefits:["Weight management","Blood sugar control","Heart health","Hydration","Immune support","Skin health"] },
+  { name:"Lime", emoji:"🟢", tagline:"Zesty tropical citrus", cal:30, protein:0.7, carbs:10.5, fat:0.2, fiber:2.8, sugar:1.7, vitC:29, potassium:102, water:88, gi:20, tags:["Detox","Low sugar"], category:"citrus", benefits:["Immunity boost","Skin health","Digestive health","Iron absorption","Anti-cancer","Weight management"] },
+  { name:"Kumquat", emoji:"🟡", tagline:"Whole-eat mini citrus", cal:71, protein:1.9, carbs:15.9, fat:0.9, fiber:6.5, sugar:9.4, vitC:43, potassium:186, water:81, gi:40, tags:["Eat whole","High fiber"], category:"citrus", benefits:["Immune support","Gut health","Heart health","Bone health","Skin health","Blood sugar balance"] },
+  { name:"Breadfruit", emoji:"🫓", tagline:"Starchy tropical staple", cal:103, protein:1.1, carbs:27.1, fat:0.2, fiber:4.9, sugar:11.0, vitC:29, potassium:490, water:71, gi:68, tags:["High potassium","Starchy"], category:"tropical", benefits:["Energy sustenance","Heart health","Gut health","Immune support","Skin health","Bone strength"] },
+  { name:"Longan", emoji:"🟤", tagline:"Dragon eye energy fruit", cal:60, protein:1.3, carbs:15.1, fat:0.1, fiber:1.1, sugar:15.0, vitC:84, potassium:266, water:83, gi:52, tags:["High Vit C","Calming"], category:"exotic", benefits:["Relaxation","Heart health","Immune support","Skin health","Blood health","Anti-aging"] },
+  { name:"Rambutan", emoji:"🔴", tagline:"Hairy tropical sweetness", cal:75, protein:0.9, carbs:20.4, fat:0.2, fiber:2.8, sugar:14.5, vitC:4.9, potassium:42, water:78, gi:50, tags:["Exotic","Iron-rich"], category:"exotic", benefits:["Immunity boost","Digestion","Blood formation","Bone health","Weight management","Anti-cancer"] },
+  { name:"Durian", emoji:"🟡", tagline:"King of pungent fruits", cal:147, protein:1.5, carbs:27.1, fat:5.3, fiber:3.8, sugar:15.0, vitC:20, potassium:436, water:65, gi:49, tags:["High calorie","Nutrient dense"], category:"exotic", benefits:["Energy boost","Immune support","Mood regulation","Muscle strength","Blood sugar balance","Bone health"] },
+  { name:"Mangosteen", emoji:"🟣", tagline:"Queen of tropical fruits", cal:73, protein:0.4, carbs:18.0, fat:0.6, fiber:1.8, sugar:16.0, vitC:2.9, potassium:48, water:80, gi:49, tags:["Xanthones","Anti-inflam"], category:"exotic", benefits:["Anti-inflammatory","Immune support","Skin health","Cancer protection","Blood sugar control","Heart health"] },
+  { name:"Nectarine", emoji:"🍑", tagline:"Smooth-skinned peach cousin", cal:44, protein:1.1, carbs:10.6, fat:0.3, fiber:1.7, sugar:7.9, vitC:5.4, potassium:201, water:87, gi:43, tags:["Vitamin A","Smooth skin"], category:"stone", benefits:["Eye health","Skin health","Heart health","Weight management","Immune support","Digestive health"] },
+  { name:"Damson", emoji:"🟣", tagline:"Sharp wild plum of England", cal:38, protein:0.5, carbs:9.6, fat:0.1, fiber:2.2, sugar:6.0, vitC:5, potassium:140, water:89, gi:30, tags:["Tart","Antioxidant"], category:"stone", benefits:["Digestive health","Bone health","Antioxidants","Immune support","Heart health","Blood pressure"] },
+  { name:"Ackee", emoji:"🫘", tagline:"Jamaica's national fruit", cal:151, protein:2.9, carbs:9.5, fat:15.2, fiber:2.7, sugar:4.0, vitC:30, potassium:270, water:57, gi:20, tags:["Healthy fats","Exotic"], category:"exotic", benefits:["Energy production","Blood sugar control","Heart health","Bone strength","Nerve health","Iron absorption"] },
+  { name:"Soursop", emoji:"🍈", tagline:"Cancer-fighting creamy fruit", cal:66, protein:1.0, carbs:16.8, fat:0.3, fiber:3.3, sugar:10.0, vitC:20, potassium:278, water:82, gi:40, tags:["Anti-cancer","Exotic"], category:"exotic", benefits:["Cancer protection","Immune support","Anti-inflammatory","Digestive health","Blood sugar control","Mood boost"] },
+  { name:"Sapodilla", emoji:"🟤", tagline:"Caramel-sweet tropical gem", cal:83, protein:0.4, carbs:19.9, fat:1.1, fiber:5.3, sugar:12.0, vitC:14.7, potassium:193, water:78, gi:55, tags:["High fiber","Sweet"], category:"exotic", benefits:["Energy boost","Bone health","Digestive health","Eye health","Anti-inflammatory","Immune support"] },
+];
+
+let selectedFruit = null;
+
+function renderFruits(filter = 'all') {
+  const grid = document.getElementById('fruitsGrid');
+  const visible = filter === 'all' ? fruits : fruits.filter(f => f.category === filter || f.category === 'all' || filter === 'all');
+  const shown = fruits.filter(f => filter === 'all' ? true : f.category === filter);
+  document.getElementById('countLabel').textContent = shown.length + ' fruit' + (shown.length !== 1 ? 's' : '');
+
+  grid.innerHTML = fruits.map((f, i) => {
+    const hidden = filter !== 'all' && f.category !== filter;
+    return `
+    <div class="fruit-item${hidden ? ' hidden' : ''}${selectedFruit === f.name ? ' selected' : ''}"
+         data-name="${f.name}" onclick="toggleDetail('${f.name}')"
+         style="animation: fadeIn 0.3s ease ${(i % 10) * 0.03}s both;">
+      <div class="fruit-icon">${f.emoji}</div>
+      <div class="fruit-info">
+        <div class="fruit-name-row">
+          <span class="fruit-name">${f.name}</span>
+          <span class="fruit-cal">${f.cal} kcal</span>
+        </div>
+        <div class="fruit-tagline">${f.tagline}</div>
+        <div class="fruit-tags">
+          ${f.tags.map(t => `<span class="tag">${t}</span>`).join('')}
+        </div>
+      </div>
+      <span class="fruit-arrow">›</span>
+    </div>`;
+  }).join('');
+}
+
+function toggleDetail(name) {
+  if (selectedFruit === name) {
+    selectedFruit = null;
+    document.getElementById('detailPanel').classList.remove('open');
+    renderFruits(activeFilter);
+    return;
+  }
+  selectedFruit = name;
+  renderFruits(activeFilter);
+  showDetail(fruits.find(f => f.name === name));
+}
+
+function showDetail(f) {
+  const panel = document.getElementById('detailPanel');
+  const maxes = { carbs: 30, protein: 5, fat: 35, fiber: 10 };
+
+  panel.innerHTML = `
+    <div class="detail-top">
+      <div class="detail-emoji">${f.emoji}</div>
+      <div class="detail-headline">
+        <div class="detail-name">${f.name}</div>
+        <div class="detail-desc">${f.tagline} — ${f.cal} kcal per 100g · GI: ${f.gi} · ${f.water}% water</div>
+        <div class="detail-badges">
+          ${f.tags.map(t => `<span class="detail-badge">${t}</span>`).join('')}
+        </div>
+      </div>
+      <button class="detail-close" onclick="toggleDetail('${f.name}')">×</button>
+    </div>
+    <div class="detail-body">
+      <p class="detail-section-label">Full Nutrition per 100g</p>
+      <div class="nutrition-grid">
+        ${[
+          ['Calories','kcal',f.cal],
+          ['Protein','g',f.protein],
+          ['Carbs','g',f.carbs],
+          ['Fat','g',f.fat],
+          ['Fiber','g',f.fiber],
+          ['Sugar','g',f.sugar],
+          ['Vitamin C','mg',f.vitC],
+          ['Potassium','mg',f.potassium],
+          ['Water','%',f.water],
+          ['Glycemic Index','GI',f.gi],
+        ].map(([l,u,v]) => `
+          <div class="nutrition-card">
+            <div class="nutrition-label">${l}</div>
+            <div class="nutrition-value">${v}<span class="nutrition-unit">${u}</span></div>
+          </div>`).join('')}
+      </div>
+
+      <p class="detail-section-label">Macro Breakdown</p>
+      <div class="bar-section">
+        ${[['Carbohydrates',f.carbs,maxes.carbs,'g'],['Protein',f.protein,maxes.protein,'g'],['Fat',f.fat,maxes.fat,'g'],['Dietary Fiber',f.fiber,maxes.fiber,'g']].map(([l,v,m,u]) => `
+        <div class="bar-row">
+          <div class="bar-meta"><span class="bar-name">${l}</span><span class="bar-val">${v}${u}</span></div>
+          <div class="bar-track"><div class="bar-fill" style="width:${Math.min(100,v/m*100).toFixed(1)}%"></div></div>
+        </div>`).join('')}
+      </div>
+
+      <p class="detail-section-label">Health Benefits</p>
+      <div class="benefits-grid">
+        ${f.benefits.map(b => `<span class="benefit-pill">${b}</span>`).join('')}
+      </div>
+    </div>`;
+
+  panel.classList.add('open');
+  panel.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+}
+
+let activeFilter = 'all';
+
+document.getElementById('filterBar').addEventListener('click', e => {
+  const btn = e.target.closest('.filter-btn');
+  if (!btn) return;
+  document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  activeFilter = btn.dataset.filter;
+  selectedFruit = null;
+  document.getElementById('detailPanel').classList.remove('open');
+  renderFruits(activeFilter);
+});
+
+const style = document.createElement('style');
+style.textContent = '@keyframes fadeIn { from{opacity:0;transform:translateY(6px)} to{opacity:1;transform:translateY(0)} }';
+document.head.appendChild(style);
+
+renderFruits();
+</script>
+</body>
+</html>
